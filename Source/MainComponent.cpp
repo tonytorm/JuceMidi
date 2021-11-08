@@ -12,6 +12,15 @@ MainComponent::MainComponent()
     
     audioDeviceManager.setMidiInputDeviceEnabled(midiInputDevices[1].identifier, true);
     audioDeviceManager.addMidiInputDeviceCallback("", this);
+    
+    addAndMakeVisible(midiLabel);
+    midiLabel.setEditable(true);
+    midiLabel.setFont (juce::Font (16.0f, juce::Font::bold));
+    midiLabel.setText ("YO", juce::dontSendNotification);
+    midiLabel.setColour (juce::Label::textColourId, juce::Colours::lightgreen);
+    midiLabel.setJustificationType (juce::Justification::centred);
+    midiLabel.setSize(getWidth(), getHeight());
+    
 }
 
 MainComponent::~MainComponent()
@@ -27,17 +36,25 @@ void MainComponent::paint (juce::Graphics& g)
 
     g.setFont (juce::Font (16.0f));
     g.setColour (juce::Colours::white);
-    g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
+    
 }
 
 void MainComponent::resized()
 {
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+    
 }
 
 void MainComponent::handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message)
 {
     DBG("Message received\n");
+    String midiText;
+    if (message.isNoteOnOrOff())
+    {
+        midiText << "NoteOnOrOff: Channel " << message.getChannel();
+        midiText << " Note Number " << message.getNoteNumber();
+        midiText << " Velocity " << message.getVelocity();
+    }
+    midiLabel.getTextValue() = midiText;
 }
+
+
